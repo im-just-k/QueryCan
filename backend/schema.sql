@@ -7,36 +7,21 @@ CREATE TABLE IF NOT EXISTS universities (
 ALTER TABLE universities ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access for universities" ON universities FOR SELECT USING (true);
 
--- Seed data for target Canadian institutions
 INSERT INTO universities (name, province) VALUES
-    ('University of Toronto', 'ON'),
-    ('University of Waterloo', 'ON'),
-    ('University of British Columbia', 'BC'),
-    ('McGill University', 'QC'),
-    ('University of Alberta', 'AB'),
-    ('Université de Montréal', 'QC'),
-    ('Simon Fraser University', 'BC'),
-    ('McMaster University', 'ON'),
-    ('University of Ottawa', 'ON'),
-    ('Carleton University', 'ON'),
-    ('University of Calgary', 'AB'),
-    ('Queen''s University', 'ON'),
-    ('University of Victoria', 'BC'),
-    ('Western University', 'ON'),
-    ('York University', 'ON')
+    ('University of Waterloo', 'ON')
 ON CONFLICT (name) DO NOTHING;
 
--- Faculty records restricted to Computer Science departments
+-- Faculty records mapping to Waterloo
 CREATE TABLE IF NOT EXISTS faculty (
     id BIGSERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     university_id BIGINT REFERENCES universities(id) ON DELETE SET NULL,
-    department VARCHAR(100) DEFAULT 'Computer Science',
+    department VARCHAR(150) DEFAULT 'Cheriton School of Computer Science',
+    research_interests TEXT[] DEFAULT '{}' NOT NULL, -- New field for student filtering (e.g., {'AI', 'Systems'})
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    CONSTRAINT check_cs_only CHECK (department IN ('Computer Science', 'School of Computer Science', 'Computer Science Department'))
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
 ALTER TABLE faculty ENABLE ROW LEVEL SECURITY;
